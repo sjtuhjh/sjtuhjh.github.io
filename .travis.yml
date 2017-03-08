@@ -1,0 +1,27 @@
+language: node_js
+node_js: stable
+install:
+- npm install
+script:
+- git submodule init      # 用于更新主题,更新源为自己的主题项目，否则会clone最新NexT主题，而官方主题配置文件没有设置
+- git submodule update
+- cp next_config.yml ./themes/next/_config.yml
+- hexo clean && hexo g
+
+after_script:
+- cd ./public
+- git init
+- git config user.name "sjtuhjh@hotmail.com"
+- git config user.email "sjtuhjh@hotmail.com"
+- ls -l
+- git add -A
+- git commit -m "Update - auto deploy by Travis CI."
+- git push --force --quiet "https://${GIT_AUTH_TOKEN}@${GITHUB_REF}" master:master
+branches:
+  only:
+  - raw
+
+env:
+  global:
+  - GITHUB_REF: github.com/sjtuhjh/sjtuhjh.github.com.git
+
